@@ -7,10 +7,9 @@ services:
       - "8000:8000"
     environment:
       - UPLOAD_FOLDER=/var/uploads
-      - DATABASE_URL=postgresql://ctfd_60yr_user:67Q330UwlNbByFZ1ND3ukFHY5zGteA8z@dpg-d2ev9iqdbo4c738tr8pg-a.oregon-postgres.render.com:5432/ctfd_60yr
-      - SECRET_KEY=c1e3b2d8f4a9e7b6c5d8e3f2a1b4c7d8
+      - DATABASE_URL=mysql+pymysql://ctfd:ctfd@db/ctfd
       - REDIS_URL=redis://cache:6379
-      - WORKERS=4
+      - WORKERS=1
       - LOG_FOLDER=/var/log/CTFd
       - ACCESS_LOG=-
       - ERROR_LOG=-
@@ -19,8 +18,8 @@ services:
       - .data/CTFd/logs:/var/log/CTFd
       - .data/CTFd/uploads:/var/uploads
       - .:/opt/CTFd:ro
-    #depends_on:
-      #- db
+    depends_on:
+      - db
     networks:
         default:
         internal:
@@ -32,22 +31,24 @@ services:
       - ./conf/nginx/http.conf:/etc/nginx/nginx.conf
     ports:
       - 80:80
-    #depends_on:
-     # - ctfd
+    depends_on:
+      - ctfd
 
-# db:                        # ⚠️¡Eliminar o comentar!
-#   image: mariadb:10.11     # No se usa si la BD está en Render/cloud
-#   environment:
-#     - MARIADB_ROOT_PASSWORD=ctfd
-#     - MARIADB_USER=ctfd
-#     - MARIADB_PASSWORD=ctfd
-#     - MARIADB_DATABASE=ctfd
-#   volumes:
-#     - .data/mysql:/var/lib/mysql  # ¡También elimina este volumen!
+  db:
+    image: mariadb:10.11
+    restart: always
+    environment:
+      - MARIADB_ROOT_PASSWORD=ctfd
+      - MARIADB_USER=ctfd
+      - MARIADB_PASSWORD=ctfd
+      - MARIADB_DATABASE=ctfd
+      - MARIADB_AUTO_UPGRADE=1
+    volumes:
+      - .data/mysql:/var/lib/mysql
     networks:
         internal:
     # This command is required to set important mariadb defaults
-    #command: [mysqld, --character-set-server=utf8mb4, --collation-server=utf8mb4_unicode_ci, --wait_timeout=28800, --log-warnings=0]
+    command: [mysqld, --character-set-server=utf8mb4, --collation-server=utf8mb4_unicode_ci, --wait_timeout=28800, --log-warnings=0]
 
   cache:
     image: redis:4
