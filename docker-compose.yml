@@ -15,6 +15,15 @@ services:
       - ACCESS_LOG=-
       - ERROR_LOG=-
       - REVERSE_PROXY=true
+      # Configuración FTP para uploads
+      - UPLOAD_PROVIDER=ftp
+      - FTP_ENDPOINT=ctf.visionmundo.com
+      - FTP_USERNAME=ctfd.visionmundo.com  # Reemplaza con tu usuario FTP
+      - FTP_PASSWORD=70?G6;o7lf(3  # Reemplaza con tu contraseña FTP
+      - FTP_PORT=21
+      - FTP_PATH=/  # Ruta en el servidor FTP donde se guardarán los archivos
+      - FTP_TLS=false  # Cambia a true si usas FTPS
+      - AWS_S3_ENDPOINT=ctf.visionmundo.com  # Aunque dice AWS, CTFd lo usa para el dominio base 
     volumes:
       - .data/CTFd/logs:/var/log/CTFd
       - .data/CTFd/uploads:/var/uploads
