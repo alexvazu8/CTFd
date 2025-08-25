@@ -7,7 +7,7 @@ services:
       - "8000:8000"
     environment:
       - UPLOAD_FOLDER=/var/uploads
-      - DATABASE_URL=postgresql://ctfd_60yr_user:67Q330UwlNbByFZ1ND3ukFHY5zGteA8z@dpg-d2ev9iqdbo4c738tr8pg-a.oregon-postgres.render.com:5432/ctfd_60yr
+      - DATABASE_URL=${DATABASE_URL}
       - SECRET_KEY=c1e3b2d8f4a9e7b6c5d8e3f2a1b4c7d8
       - REDIS_URL=redis://cache:6379
       - WORKERS=4
