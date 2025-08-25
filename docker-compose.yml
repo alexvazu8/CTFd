@@ -15,15 +15,12 @@ services:
       - ACCESS_LOG=-
       - ERROR_LOG=-
       - REVERSE_PROXY=true
-      # Configuración FTP para uploads
-      - UPLOAD_PROVIDER=ftp
-      - FTP_ENDPOINT=ctf.visionmundo.com
-      - FTP_USERNAME=ctfd.visionmundo.com
-      - FTP_PASSWORD=70?G6;o7lf(3
-      - FTP_PORT=21
-      - FTP_PATH=/
-      - FTP_TLS=false
-      - AWS_S3_ENDPOINT=ctf.visionmundo.com
+      # Configuración AWS para uploads
+      - UPLOAD_PROVIDER=s3
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_S3_BUCKET=ctf-004185249335
+      - AWS_S3_REGION=us-east-2
     volumes:
       - .data/CTFd/logs:/var/log/CTFd
       - .data/CTFd/uploads:/var/uploads
