@@ -1,0 +1,69 @@
+services:
+  ctfd:
+    build: .
+    user: root
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - UPLOAD_FOLDER=/var/uploads
+      - DATABASE_URL=${DATABASE_URL}
+      - SECRET_KEY=c1e3b2d8f4a9e7b6c5d8e3f2a1b4c7d8
+      - REDIS_URL=redis://cache:6379
+      - WORKERS=4
+      - LOG_FOLDER=/var/log/CTFd
+      - ACCESS_LOG=-
+      - ERROR_LOG=-
+      - REVERSE_PROXY=true
+      # Configuración AWS para uploads
+      - UPLOAD_PROVIDER=s3
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_S3_BUCKET=ctf-004185249335
+      - AWS_S3_REGION=us-east-2
+    volumes:
+      - .data/CTFd/logs:/var/log/CTFd
+      - .data/CTFd/uploads:/var/uploads
+      - .:/opt/CTFd:ro
+    #depends_on:
+      #- db
+    networks:
+        default:
+        internal:
+
+  nginx:
+    image: nginx:stable
+    restart: always
+    volumes:
+      - ./conf/nginx/http.conf:/etc/nginx/nginx.conf
+    ports:
+      - 80:80
+    #depends_on:
+     # - ctfd
+
+# db:                        # ⚠️¡Eliminar o comentar!
+#   image: mariadb:10.11     # No se usa si la BD está en Render/cloud
+#   environment:
+#     - MARIADB_ROOT_PASSWORD=ctfd
+#     - MARIADB_USER=ctfd
+#     - MARIADB_PASSWORD=ctfd
+#     - MARIADB_DATABASE=ctfd
+#   volumes:
+#     - .data/mysql:/var/lib/mysql  # ¡También elimina este volumen!
+    networks:
+        internal:
+    # This command is required to set important mariadb defaults
+    #command: [mysqld, --character-set-server=utf8mb4, --collation-server=utf8mb4_unicode_ci, --wait_timeout=28800, --log-warnings=0]
+
+  cache:
+    image: redis:4
+    restart: always
+    volumes:
+    - .data/redis:/data
+    networks:
+        internal:
+
+networks:
+    default:
+    internal:
+        internal: true
